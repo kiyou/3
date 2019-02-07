@@ -8,10 +8,10 @@ import (
 
 var regions = Regions{info: info{1, "regions", ""}} // global regions map
 
-const NREGION = 256 // maximum number of regions, limited by size of byte.
+const NREGION = 1024 // maximum number of regions, limited by size of byte.
 
 func init() {
-	DeclFunc("DefRegion", DefRegion, "Define a material region with given index (0-255) and shape")
+	DeclFunc("DefRegion", DefRegion, "Define a material region with given index (0-1023) and shape")
 	DeclFunc("DefRegionCell", DefRegionCell, "Set a material region in one cell by index")
 	DeclROnly("regions", &regions, "Outputs the region index for each cell")
 }
@@ -38,7 +38,7 @@ func (r *Regions) resize() {
 	}
 }
 
-// Define a region with id (0-255) to be inside the Shape.
+// Define a region with id (0-1023) to be inside the Shape.
 func DefRegion(id int, s Shape) {
 	defRegionId(id)
 	f := func(x, y, z float64) int {
