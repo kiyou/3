@@ -1,5 +1,6 @@
 ARG cuda_version=10.0
 ARG cudnn_version=7
+ARG PORT=35367
 FROM nvidia/cuda:${cuda_version}-cudnn${cudnn_version}-devel
 LABEL maintainer="kiyou <46545721+kiyou@users.noreply.github.com>"
 ENV DEBIAN_FRONTEND noninteractive
@@ -21,3 +22,4 @@ RUN mkdir $GOPATH
 ENV PATH $PATH:$GOPATH/bin
 
 WORKDIR $GOPATH
+EXPOSE $PORT
