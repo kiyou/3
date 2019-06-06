@@ -17,7 +17,7 @@ $(MUMAX3_BIN): Dockerfile
 	-v $(HOST_PROJECT_DIR):$(CONTAINER_PROJECT_DIR) \
 	$(IMAGENAME):$(TAG) \
 	/bin/bash -c \
-	'cd $(CONTAINER_PROJECT_DIR) && ./make.bash && cp /go/bin/* $(CONTAINER_PROJECT_DIR)/bin'
+	'cd $(CONTAINER_PROJECT_DIR) && ./make.bash && mkdir -p $(CONTAINER_PROJECT_DIR)/bin && cp /go/bin/* $(CONTAINER_PROJECT_DIR)/bin'
 
 run: $(MUMAX3_BIN)
 	docker run --runtime=nvidia -it --rm \
