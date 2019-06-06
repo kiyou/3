@@ -3,22 +3,29 @@ IMAGENAME=mumax3-dev
 DOCKERPORT=35367
 HOSTPORT=35367
 
-.PHONY: docker_build mumax3_build mumax3_run
+HOST_PROJECT_DIR=$(shell readlink -f $(dir $(lastword $(MAKEFILE_LIST)))..)
+MUMAX3_BIN=$(HOST_PROJECT_DIR)/bin/mumax3
+CONTAINER_PROJECT_DIR=/go/src/github.com/mumax/3
 
-docker_build: Dockerfile
+.PHONY: build run distclean
+
+build: $(MUMAX3_BIN)
+
+$(MUMAX3_BIN): Dockerfile
 	docker build -t $(IMAGENAME):$(TAG) .
-
-mumax3_build: docker_build
 	docker run --runtime=nvidia -it --rm \
-	-v $(GOPATH):/go \
+	-v $(HOST_PROJECT_DIR):$(CONTAINER_PROJECT_DIR) \
 	$(IMAGENAME):$(TAG) \
 	/bin/bash -c \
-	'cd src/github.com/mumax/3 && make'
+	'cd $(CONTAINER_PROJECT_DIR) && ./make.bash && cp /go/bin/* $(CONTAINER_PROJECT_DIR)/bin'
 
-mumax3_run: mumax3_build
+run: $(MUMAX3_BIN)
 	docker run --runtime=nvidia -it --rm \
-	-v $(GOPATH):/go \
+	-v $(HOST_PROJECT_DIR):$(CONTAINER_PROJECT_DIR) \
 	-e PORT=$(DOCKERPORT) \
 	-p $(HOSTPORT):$(DOCKERPORT) \
 	$(IMAGENAME):$(TAG) \
-	mumax3 -http=:$(DOCKERPORT)
+	$(CONTAINER_PROJECT_DIR)/bin/mumax3 -http=:$(DOCKERPORT)
+
+distclean:
+	rm $(HOST_PROJECT_DIR)/bin/* -rf
