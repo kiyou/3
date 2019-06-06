@@ -18,7 +18,8 @@ RUN apt-get -y update && \
     rm -rf /var/lib/apt/lists/*
 
 ENV GOPATH /go
-RUN mkdir $GOPATH
+RUN mkdir -p $GOPATH/src/github.com/mumax/3 && \
+    mkdir -p $GOPATH/bin
 ENV PATH $PATH:$GOPATH/bin
 
 WORKDIR $GOPATH
