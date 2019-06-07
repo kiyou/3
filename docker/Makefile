@@ -9,7 +9,7 @@ CONTAINER_PROJECT_DIR=/go/src/github.com/mumax/3
 HOST_JOB_DIR=/tmp/mumax3_jobs
 CONTAINER_JOB_DIR=/tmp
 
-.PHONY: build run distclean
+.PHONY: build run server distclean
 
 build: $(MUMAX3_BIN)
 
