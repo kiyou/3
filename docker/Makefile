@@ -6,6 +6,8 @@ HOSTPORT=35367
 HOST_PROJECT_DIR=$(shell readlink -f $(dir $(lastword $(MAKEFILE_LIST)))..)
 MUMAX3_BIN=$(HOST_PROJECT_DIR)/bin/mumax3
 CONTAINER_PROJECT_DIR=/go/src/github.com/mumax/3
+HOST_JOB_DIR=/tmp/mumax3_jobs
+CONTAINER_JOB_DIR=/tmp
 
 .PHONY: build run distclean
 
@@ -28,6 +30,17 @@ run: $(MUMAX3_BIN)
 	-p $(HOSTPORT):$(DOCKERPORT) \
 	$(IMAGENAME):$(TAG) \
 	$(CONTAINER_PROJECT_DIR)/bin/mumax3 -http=:$(DOCKERPORT)
+
+server: $(MUMAX3_BIN)
+	docker run --runtime=nvidia -it --rm \
+	--name mumax3-server \
+	-v $(HOST_PROJECT_DIR):$(CONTAINER_PROJECT_DIR) \
+	-v $(HOST_JOB_DIR):$(CONTAINER_JOB_DIR) \
+	-e PORT=$(DOCKERPORT) \
+	-p $(HOSTPORT):$(DOCKERPORT) \
+	-w $(CONTAINER_JOB_DIR) \
+	$(IMAGENAME):$(TAG) \
+	$(CONTAINER_PROJECT_DIR)/bin/mumax3-server -exec=$(CONTAINER_PROJECT_DIR)/bin/mumax3 -l=":$(DOCKERPORT)" -ports="$(DOCKERPORT)" -scan="127.0.0.1"
 
 distclean:
 	rm $(HOST_PROJECT_DIR)/bin/* -rf
