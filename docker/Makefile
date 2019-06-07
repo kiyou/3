@@ -14,6 +14,7 @@ build: $(MUMAX3_BIN)
 $(MUMAX3_BIN): Dockerfile
 	docker build -t $(IMAGENAME):$(TAG) .
 	docker run --runtime=nvidia -it --rm \
+	--name mumax3-build \
 	-v $(HOST_PROJECT_DIR):$(CONTAINER_PROJECT_DIR) \
 	$(IMAGENAME):$(TAG) \
 	/bin/bash -c \
@@ -21,6 +22,7 @@ $(MUMAX3_BIN): Dockerfile
 
 run: $(MUMAX3_BIN)
 	docker run --runtime=nvidia -it --rm \
+	--name mumax3 \
 	-v $(HOST_PROJECT_DIR):$(CONTAINER_PROJECT_DIR) \
 	-e PORT=$(DOCKERPORT) \
 	-p $(HOSTPORT):$(DOCKERPORT) \
