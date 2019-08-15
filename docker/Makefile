@@ -12,7 +12,7 @@ CONTAINER_BUILD_NAME=mumax3-build
 CONTAINER_RUN_NAME=mumax3
 CONTAINER_SERVER_NAME=mumax3-server
 
-.PHONY: build run server distclean
+.PHONY: build run server debug distclean
 
 build: $(MUMAX3_BIN)
 
@@ -44,6 +44,15 @@ server: $(MUMAX3_BIN)
 	-w $(CONTAINER_JOB_DIR) \
 	$(IMAGENAME):$(TAG) \
 	$(CONTAINER_PROJECT_DIR)/bin/mumax3-server -exec=$(CONTAINER_PROJECT_DIR)/bin/mumax3 -l=":$(DOCKERPORT)" -ports="$(DOCKERPORT)" -scan="127.0.0.1"
+
+debug: $(MUMAX3_BIN)
+	docker run --runtime=nvidia -it --rm \
+	--name $(CONTAINER_RUN_NAME) \
+	-v $(HOST_PROJECT_DIR):$(CONTAINER_PROJECT_DIR) \
+	-e PORT=$(DOCKERPORT) \
+	-p $(HOSTPORT):$(DOCKERPORT) \
+	$(IMAGENAME):$(TAG) \
+	/bin/bash
 
 distclean:
 	rm $(HOST_PROJECT_DIR)/bin/* -rf
