@@ -11,6 +11,8 @@ CONTAINER_JOB_DIR=/tmp
 CONTAINER_BUILD_NAME=mumax3-build
 CONTAINER_RUN_NAME=mumax3
 CONTAINER_SERVER_NAME=mumax3-server
+CACHE_DIR=/tmp/mumax3_cache
+CACHE_VOLUME_NAME=mumax3_cache
 
 .PHONY: build run server debug distclean
 
@@ -29,6 +31,7 @@ run: $(MUMAX3_BIN)
 	docker run --runtime=nvidia -d --rm \
 	--name $(CONTAINER_RUN_NAME) \
 	-v $(HOST_PROJECT_DIR):$(CONTAINER_PROJECT_DIR) \
+	-v $(CACHE_VOLUME_NAME):$(CACHE_DIR) \
 	-e PORT=$(DOCKERPORT) \
 	-p $(HOSTPORT):$(DOCKERPORT) \
 	$(IMAGENAME):$(TAG) \
@@ -39,6 +42,7 @@ server: $(MUMAX3_BIN)
 	--name $(CONTAINER_SERVER_NAME) \
 	-v $(HOST_PROJECT_DIR):$(CONTAINER_PROJECT_DIR) \
 	-v $(HOST_JOB_DIR):$(CONTAINER_JOB_DIR) \
+	-v $(CACHE_VOLUME_NAME):$(CACHE_DIR) \
 	-e PORT=$(DOCKERPORT) \
 	-p $(HOSTPORT):$(DOCKERPORT) \
 	-w $(CONTAINER_JOB_DIR) \
@@ -49,6 +53,7 @@ debug: $(MUMAX3_BIN)
 	docker run --runtime=nvidia -it --rm \
 	--name $(CONTAINER_RUN_NAME) \
 	-v $(HOST_PROJECT_DIR):$(CONTAINER_PROJECT_DIR) \
+	-v $(CACHE_VOLUME_NAME):$(CACHE_DIR) \
 	-e PORT=$(DOCKERPORT) \
 	-p $(HOSTPORT):$(DOCKERPORT) \
 	$(IMAGENAME):$(TAG) \
