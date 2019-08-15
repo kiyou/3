@@ -8,6 +8,9 @@ MUMAX3_BIN=$(HOST_PROJECT_DIR)/bin/mumax3
 CONTAINER_PROJECT_DIR=/go/src/github.com/mumax/3
 HOST_JOB_DIR=/tmp/mumax3_jobs
 CONTAINER_JOB_DIR=/tmp
+CONTAINER_BUILD_NAME=mumax3-build
+CONTAINER_RUN_NAME=mumax3
+CONTAINER_SERVER_NAME=mumax3-server
 
 .PHONY: build run server distclean
 
@@ -16,7 +19,7 @@ build: $(MUMAX3_BIN)
 $(MUMAX3_BIN): Dockerfile
 	docker build -t $(IMAGENAME):$(TAG) .
 	docker run --runtime=nvidia -it --rm \
-	--name mumax3-build \
+	--name $(CONTAINER_BUILD_NAME) \
 	-v $(HOST_PROJECT_DIR):$(CONTAINER_PROJECT_DIR) \
 	$(IMAGENAME):$(TAG) \
 	/bin/bash -c \
@@ -24,7 +27,7 @@ $(MUMAX3_BIN): Dockerfile
 
 run: $(MUMAX3_BIN)
 	docker run --runtime=nvidia -it --rm \
-	--name mumax3 \
+	--name $(CONTAINER_RUN_NAME) \
 	-v $(HOST_PROJECT_DIR):$(CONTAINER_PROJECT_DIR) \
 	-e PORT=$(DOCKERPORT) \
 	-p $(HOSTPORT):$(DOCKERPORT) \
@@ -33,7 +36,7 @@ run: $(MUMAX3_BIN)
 
 server: $(MUMAX3_BIN)
 	docker run --runtime=nvidia -it --rm \
-	--name mumax3-server \
+	--name $(CONTAINER_SERVER_NAME) \
 	-v $(HOST_PROJECT_DIR):$(CONTAINER_PROJECT_DIR) \
 	-v $(HOST_JOB_DIR):$(CONTAINER_JOB_DIR) \
 	-e PORT=$(DOCKERPORT) \
