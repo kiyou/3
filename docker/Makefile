@@ -18,7 +18,7 @@ build: $(MUMAX3_BIN)
 
 $(MUMAX3_BIN): Dockerfile
 	docker build -t $(IMAGENAME):$(TAG) .
-	docker run --runtime=nvidia -it --rm \
+	docker run --runtime=nvidia -d --rm \
 	--name $(CONTAINER_BUILD_NAME) \
 	-v $(HOST_PROJECT_DIR):$(CONTAINER_PROJECT_DIR) \
 	$(IMAGENAME):$(TAG) \
@@ -26,7 +26,7 @@ $(MUMAX3_BIN): Dockerfile
 	'cd $(CONTAINER_PROJECT_DIR) && ./make.bash && mkdir -p $(CONTAINER_PROJECT_DIR)/bin && cp /go/bin/* $(CONTAINER_PROJECT_DIR)/bin'
 
 run: $(MUMAX3_BIN)
-	docker run --runtime=nvidia -it --rm \
+	docker run --runtime=nvidia -d --rm \
 	--name $(CONTAINER_RUN_NAME) \
 	-v $(HOST_PROJECT_DIR):$(CONTAINER_PROJECT_DIR) \
 	-e PORT=$(DOCKERPORT) \
@@ -35,7 +35,7 @@ run: $(MUMAX3_BIN)
 	$(CONTAINER_PROJECT_DIR)/bin/mumax3 -http=:$(DOCKERPORT)
 
 server: $(MUMAX3_BIN)
-	docker run --runtime=nvidia -it --rm \
+	docker run --runtime=nvidia -d --rm \
 	--name $(CONTAINER_SERVER_NAME) \
 	-v $(HOST_PROJECT_DIR):$(CONTAINER_PROJECT_DIR) \
 	-v $(HOST_JOB_DIR):$(CONTAINER_JOB_DIR) \
